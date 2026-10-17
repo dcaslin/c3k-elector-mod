@@ -1,0 +1,10 @@
+.DS_Store
+.context/
+config/local.env
+__pycache__/
+# Never commit game data or generated output
+*.log
+*.ck3
+logs/
+script_docs/
+data_types/

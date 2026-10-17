@@ -1,0 +1,26 @@
+﻿# Elector Status: read-only character interaction.
+# Shows which titles held by the player (scope:actor) the selected character
+# (scope:recipient) is an elector for. All logic lives in elector_status.0001.
+# This interaction changes no votes, characters, or succession.
+
+elector_status_interaction = {
+	category = interaction_category_succession
+	icon = scroll_scales
+	desc = elector_status_interaction_desc
+
+	auto_accept = yes
+	use_diplomatic_range = no
+	ignores_pending_interaction_block = yes
+	show_effects_in_notification = no
+
+	# Players only; the AI never considers this interaction.
+	is_available = {
+		is_ai = no
+	}
+
+	on_accept = {
+		scope:actor = {
+			trigger_event = elector_status.0001
+		}
+	}
+}

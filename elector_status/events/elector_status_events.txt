@@ -1,0 +1,114 @@
+﻿namespace = elector_status
+
+# Elector Status report.
+# root = scope:actor (the player who used the interaction)
+# scope:recipient = the character being inspected
+elector_status.0001 = {
+	type = character_event
+	title = elector_status.0001.t
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				trigger = { exists = scope:elector_status_title_0 }
+				desc = elector_status.0001.desc.some
+			}
+			desc = elector_status.0001.desc.none
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_0 }
+			desc = elector_status.0001.line_0
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_1 }
+			desc = elector_status.0001.line_1
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_2 }
+			desc = elector_status.0001.line_2
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_3 }
+			desc = elector_status.0001.line_3
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_4 }
+			desc = elector_status.0001.line_4
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_5 }
+			desc = elector_status.0001.line_5
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_6 }
+			desc = elector_status.0001.line_6
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_7 }
+			desc = elector_status.0001.line_7
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_8 }
+			desc = elector_status.0001.line_8
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_9 }
+			desc = elector_status.0001.line_9
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_10 }
+			desc = elector_status.0001.line_10
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_11 }
+			desc = elector_status.0001.line_11
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_12 }
+			desc = elector_status.0001.line_12
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_13 }
+			desc = elector_status.0001.line_13
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_14 }
+			desc = elector_status.0001.line_14
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_15 }
+			desc = elector_status.0001.line_15
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_16 }
+			desc = elector_status.0001.line_16
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_17 }
+			desc = elector_status.0001.line_17
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_18 }
+			desc = elector_status.0001.line_18
+		}
+		triggered_desc = {
+			trigger = { exists = scope:elector_status_title_19 }
+			desc = elector_status.0001.line_19
+		}
+		triggered_desc = {
+			trigger = { scope:elector_status_has_overflow ?= yes }
+			desc = elector_status.0001.overflow
+		}
+	}
+	theme = realm
+	left_portrait = {
+		character = scope:recipient
+	}
+
+	immediate = {
+		elector_status_collect_titles_effect = yes
+	}
+
+	option = {
+		name = elector_status.0001.a
+	}
+}
