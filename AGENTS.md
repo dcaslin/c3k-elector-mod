@@ -5,10 +5,16 @@ ephemeral git worktrees; everything needed to continue lives here, not in local 
 
 ## What this is
 
-A Crusader Kings III (CK3) utility mod. It adds a right-click character interaction,
-**Elector Status**, that lists which titles held by the player the selected character
-is an elector for, or says there are none. It is read-only: it changes no votes,
-characters, laws, or succession.
+A Crusader Kings III (CK3) utility mod with two read-only features:
+
+- **Hover tooltip:** every character portrait tooltip (map, character view, outliner,
+  character finder) gains a block when that character is an elector for a title the
+  player holds. It shows up to 3 titles, who they currently vote for, whether their vote is
+  forced, and the player's hook / known blackmailable secret on them. Non-electors'
+  tooltips are unchanged.
+- **Interaction:** right-click → **Elector Status** lists every matching title (up to 20).
+
+Nothing changes votes, characters, laws, or succession.
 
 Target game version: **CK3 1.20.1.1 (Crozier)** on macOS (`supported_version="1.20.*"`).
 
@@ -19,8 +25,10 @@ elector_status/                      # the mod itself; this folder is what gets 
   descriptor.mod                     # mod metadata (install script adds path=)
   common/character_interactions/elector_status_interactions.txt
   common/scripted_effects/elector_status_effects.txt
+  common/customizable_localization/elector_status_custom_loc.txt   # tooltip lines
   events/elector_status_events.txt
   localization/english/elector_status_l_english.yml
+  localization/replace/english/elector_status_replace_l_english.yml  # the one vanilla key we replace
 scripts/install-macos.sh             # copy mod into the stable CK3 mod dir
 scripts/validate.py                  # static checks (no game launch)
 scripts/load-test-macos.sh           # headless CK3 parse/load test
@@ -28,7 +36,39 @@ config/local.env.example             # machine-specific path overrides
 docs/TESTING.md                      # in-game test plan
 ```
 
-## Architecture
+## Architecture: hover tooltip
+
+The last paragraph of every portrait tooltip (`cooltip_type` in vanilla
+`gui/shared/cooltip.gui`, instantiated from `gui/shared/portraits.gui` and
+`gui/hud_outliner.gui`) is the multi-line loc key `CHARACTER_TOOLTIP_INSTRUCTION`
+("Click to view / Right-click to interact"), with `Character` in context. The mod replaces
+**only that loc key** (via `localization/replace/`). It keeps the vanilla text and prepends
+six `[Character.Custom2('ElectorStatusTT…', GetPlayer)]` calls. No GUI file is overridden.
+
+Each custom loc (`common/customizable_localization/elector_status_custom_loc.txt`) runs with
+`root` = hovered character and `scope:second` = player. It returns `elector_status_tt_empty`
+unless `any_election_title = { holder = scope:second }`.
+
+- `ElectorStatusTTTitle0..2`: `setup_scope` saves the Nth title (`ordered_election_title`,
+  `order_by = tier`) and, via `random_election_candidate` + `has_election_vote_of`, the
+  candidate the elector currently votes for. The trigger re-checks `count >= N+1` (same
+  capping issue as the event). The loc line shows the title, the vote, and
+  `(vote forced)` when the GUI function `Title.CanCharacterControlVote(elector)` is false.
+  That is the same check vanilla `gui/shared/succession_election_widgets.gui` uses to show
+  `SUCCESSION_ELECTION_WINDOW_VOTE_BREAKDOWN_FORCED_VOTE`. There is **no script trigger**
+  for forced votes in 1.20.1.1; this GUI function is the only access.
+- `ElectorStatusTTHook`: strong/weak × usable/cooldown via `has_strong_usable_hook`,
+  `has_strong_hook`, `has_usable_hook`, `has_hook`. Otherwise "you know a blackmailable
+  secret" via vanilla's `is_blackmailable_secret_trigger` + `is_known_by` (the same checks as
+  the vanilla Blackmail interaction; unknown secrets are never revealed).
+- Inside custom-loc output keys, `ROOT.Char` is the custom-loc root and `SCOPE.sTitle('x')`
+  resolves `setup_scope` saves (vanilla precedent: `love_letter_text`).
+
+`validate.py` fails if the vanilla text inside the override no longer matches the installed
+game (check after every CK3 patch). Another mod that also replaces
+`CHARACTER_TOOLTIP_INSTRUCTION` would conflict; the last one loaded wins.
+
+## Architecture: interaction
 
 1. `elector_status_interaction` (category succession, `auto_accept = yes`, players only,
    no diplomatic range limit). `on_accept` fires `elector_status.0001` on `scope:actor`.
@@ -56,7 +96,8 @@ Why this shape:
   Same guard + position pattern as vanilla `common/activities/activity_types/coronation.txt`.
 - **No persistent state.** Saved scopes and scope values die with the event. No flags,
   variables, on_actions, or periodic scans. No vanilla file is overridden; all files use
-  unique `elector_status_` names (validate.py checks for path collisions).
+  unique `elector_status_` names (validate.py checks for path collisions). The only vanilla
+  override is the single replaced loc key described above.
 - The confirmation window (Send → event) is accepted for v1: `needs_confirmation` would
   skip it but is documented as deprecated.
 
@@ -126,7 +167,12 @@ after every change; the installed copy is a mirror (`rsync --delete`, scoped to 
 - **error.log:** `$CK3_USER_DIR/logs/error.log`, rewritten every launch.
   `grep elector_status "$HOME/Documents/Paradox Interactive/Crusader Kings III/logs/error.log"`.
   Loc data-function errors (for example a bad `[scope.Function]`) only appear after the event
-  has actually been displayed, so check again after in-game testing.
+  or tooltip has actually been displayed, so check again after in-game testing. The headless
+  load test cannot catch them.
+- **Character finder:** its filter categories are hard-coded in the engine (not in any
+  script file), so a true "electors only" filter isn't moddable. Portrait hovers in the finder
+  already show the tooltip block. A per-row marker would require overriding the vanilla GUI
+  type `widget_character_list_item_finder` (`gui/shared/lists.gui`); this hasn't been done.
 
 ## Do not commit
 

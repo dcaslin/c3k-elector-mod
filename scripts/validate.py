@@ -118,9 +118,13 @@ def check_localization() -> dict[str, str]:
 
 
 def check_loc_references(texts: dict[str, str], loc: dict[str, str]) -> None:
-    ref_re = re.compile(r"\b(?:title|desc|name)\s*=\s*([A-Za-z0-9_.]+)\s*(?:#.*)?$")
+    ref_re = re.compile(r"\b(?:title|desc|name|localization_key)\s*=\s*([A-Za-z0-9_.]+)\s*(?:#.*)?$")
     for path, text in texts.items():
-        if not (path.startswith("elector_status/events") or "character_interactions" in path):
+        if not (
+            path.startswith("elector_status/events")
+            or "character_interactions" in path
+            or "customizable_localization" in path
+        ):
             continue
         for lineno, line in enumerate(text.splitlines(), 1):
             m = ref_re.search(line.split("#", 1)[0])
@@ -179,6 +183,53 @@ def check_slots(texts: dict[str, str], loc: dict[str, str]) -> None:
     notes.append(f"{n} title slots consistent across effect, event, and loc")
 
 
+TOOLTIP_KEY = "CHARACTER_TOOLTIP_INSTRUCTION"
+
+
+def check_tooltip(texts: dict[str, str], loc: dict[str, str]) -> None:
+    custom = texts.get("elector_status/common/customizable_localization/elector_status_custom_loc.txt", "")
+    defined = set(re.findall(r"^([A-Za-z0-9_]+)\s*=\s*\{", custom, re.M))
+    replaced = loc.get(TOOLTIP_KEY, "")
+    called = re.findall(r"Character\.Custom2\('([A-Za-z0-9_]+)', GetPlayer\)", replaced)
+    if not called:
+        err(f"{TOOLTIP_KEY} replacement calls no custom loc")
+    for key in called:
+        if key not in defined:
+            err(f"{TOOLTIP_KEY} calls undefined custom loc {key}")
+    for key in defined - set(called):
+        err(f"custom loc {key} is defined but never called from {TOOLTIP_KEY}")
+
+    blocks = dict(re.findall(r"^(ElectorStatusTTTitle\d+) = \{(.*?)^\}", custom, re.M | re.S))
+    n = len(blocks)
+    for name, body in blocks.items():
+        i = int(name.removeprefix("ElectorStatusTTTitle"))
+        if set(re.findall(r"position = (\d+)", body)) != {str(i)}:
+            err(f"{name}: every position must be {i}")
+        if set(re.findall(r"count >= (\d+)", body)) != {str(i + 1)}:
+            err(f"{name}: every count guard must be >= {i + 1}")
+    if [f"ElectorStatusTTTitle{i}" for i in range(n)] != [k for k in called if k.startswith("ElectorStatusTTTitle")]:
+        err(f"{TOOLTIP_KEY} must call ElectorStatusTTTitle0..{n - 1} in order")
+    more = re.search(r"^ElectorStatusTTMore = \{.*?count >= (\d+)", custom, re.M | re.S)
+    if not more or int(more.group(1)) != n + 1:
+        err(f"ElectorStatusTTMore must trigger at count >= {n + 1}")
+    notes.append(f"tooltip: {len(called)} custom loc calls, {n} title slots")
+
+
+def check_tooltip_drift(loc: dict[str, str], gdir: Path) -> None:
+    """The replaced key must end with the current vanilla text, or a game update changed it."""
+    vanilla_file = gdir / "localization/english/gui/common_l_english.yml"
+    m = re.search(rf'^ {TOOLTIP_KEY}:\d* "(.*)"\s*$', vanilla_file.read_text(encoding="utf-8-sig"), re.M)
+    if not m:
+        err(f"{TOOLTIP_KEY} not found in {vanilla_file}; vanilla moved it, re-check the override")
+        return
+    ours = loc.get(TOOLTIP_KEY, "")
+    tail = re.split(r"\[Character\.Custom2\('[A-Za-z0-9_]+', GetPlayer\)\]", ours)[-1]
+    if tail != m.group(1):
+        err(f"{TOOLTIP_KEY}: vanilla text changed; update the override.\n  vanilla: {m.group(1)}\n  ours:    {tail}")
+    else:
+        notes.append(f"{TOOLTIP_KEY} override matches current vanilla text")
+
+
 def check_no_vanilla_overrides(gdir: Path) -> None:
     for p in MOD.rglob("*"):
         if p.is_file() and p.name != "descriptor.mod":
@@ -213,10 +264,12 @@ def main() -> int:
     check_loc_references(texts, loc)
     check_events(texts)
     check_slots(texts, loc)
+    check_tooltip(texts, loc)
     if use_game:
         gdir = game_dir()
         if gdir.is_dir():
             check_no_vanilla_overrides(gdir)
+            check_tooltip_drift(loc, gdir)
             check_iterators_in_binary(texts, gdir)
         else:
             notes.append(f"skipped game checks (CK3 game dir not found: {gdir})")

@@ -27,3 +27,17 @@
  elector_status.0001.line_19:0 "\n$BULLET_WITH_TAB$[elector_status_title_19.GetName]"
  elector_status.0001.overflow:0 "\n\n...and more. Only the first 20 titles are listed."
  elector_status.0001.a:0 "Noted"
+
+ # Hover tooltip lines (common/customizable_localization/elector_status_custom_loc.txt)
+ elector_status_tt_empty:0 ""
+ elector_status_tt_header:0 "#high [elector|E] for your titles:#!"
+ elector_status_tt_title_vote:0 "\n$BULLET_WITH_TAB$[elector_status_tt_title.GetNameNoTooltip]: votes [elector_status_tt_vote.GetShortUINameNoTooltip][SelectLocalization( SCOPE.sTitle('elector_status_tt_title').CanCharacterControlVote( ROOT.Char ), 'elector_status_tt_empty', 'elector_status_tt_forced' )]"
+ elector_status_tt_title_novote:0 "\n$BULLET_WITH_TAB$[elector_status_tt_title.GetNameNoTooltip][SelectLocalization( SCOPE.sTitle('elector_status_tt_title').CanCharacterControlVote( ROOT.Char ), 'elector_status_tt_empty', 'elector_status_tt_forced' )]"
+ elector_status_tt_forced:0 " #X (vote forced)#!"
+ elector_status_tt_more:0 "\n$BULLET_WITH_TAB$#weak ...and more (right-click > Elector Status)#!"
+ elector_status_tt_hook_strong_usable:0 "\n[hook|E]: #P strong, usable now#!\n\n"
+ elector_status_tt_hook_strong_cooldown:0 "\n[hook|E]: #V strong, on cooldown#!\n\n"
+ elector_status_tt_hook_weak_usable:0 "\n[hook|E]: #P weak, usable now#!\n\n"
+ elector_status_tt_hook_weak_cooldown:0 "\n[hook|E]: #V weak, on cooldown#!\n\n"
+ elector_status_tt_hook_secret:0 "\n[hook|E]: none, but you know a #P blackmailable#! [secret|E]\n\n"
+ elector_status_tt_hook_none:0 "\n[hook|E]: #N none#!, no known blackmailable [secret|E]\n\n"

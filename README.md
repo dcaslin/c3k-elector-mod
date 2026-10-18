@@ -1,7 +1,8 @@
 # c3k-elector-mod
 
-Crusader Kings III mod: **Elector Status**, a right-click character interaction that shows
-which of your currently held titles the selected character votes in. Covers every elective
+Crusader Kings III mod: **Elector Status**. Hover any character to see whether they are an elector
+for titles you hold, how they vote, whether their vote is forced, and your hook/secret leverage
+on them. Right-click → Elector Status gives the full list. Covers every elective
 law (Tanistry, Saxon, Feudal, Princely, Scandinavian, Tribal, Confederation, clerical, and
 modded ones) because it reads the game's own elector data. It is read-only.
 

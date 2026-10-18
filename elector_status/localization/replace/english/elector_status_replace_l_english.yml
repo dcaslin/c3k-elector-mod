@@ -1,0 +1,5 @@
+﻿l_english:
+ # Replaces vanilla CHARACTER_TOOLTIP_INSTRUCTION (localization/english/gui/common_l_english.yml),
+ # the last paragraph of every portrait tooltip. Our lines are prepended; everything after the
+ # last Custom2 call must match the vanilla text exactly (scripts/validate.py checks this).
+ CHARACTER_TOOLTIP_INSTRUCTION:0 "[Character.Custom2('ElectorStatusTTHeader', GetPlayer)][Character.Custom2('ElectorStatusTTTitle0', GetPlayer)][Character.Custom2('ElectorStatusTTTitle1', GetPlayer)][Character.Custom2('ElectorStatusTTTitle2', GetPlayer)][Character.Custom2('ElectorStatusTTMore', GetPlayer)][Character.Custom2('ElectorStatusTTHook', GetPlayer)]#I [Select_CString(Character.IsShownInCharacterWindow,'Click to go to location', 'Click to view')]\nRight-click to interact#!"

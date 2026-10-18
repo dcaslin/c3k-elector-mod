@@ -1,0 +1,292 @@
+﻿# Elector Status lines for the character hover tooltip.
+#
+# Called from the replaced CHARACTER_TOOLTIP_INSTRUCTION loc key as
+# [Character.Custom2('<key>', GetPlayer)], so:
+#   root         = the hovered character
+#   scope:second = the player
+# Every key renders an empty string unless root is an elector for at least one
+# title the player holds, so non-electors' tooltips are unchanged.
+#
+# Elector eligibility comes from the engine list `election_title`, same as the
+# Elector Status interaction. Saved scopes here exist only while the text renders.
+#
+# Title slots use `ordered_ position = N` in setup_scope. ordered_ caps an
+# out-of-range position to the last element, so each slot's trigger re-checks
+# `count >= N+1` and falls back to empty text otherwise.
+
+ElectorStatusTTHeader = {
+	type = character
+	text = {
+		trigger = {
+			any_election_title = { holder = scope:second }
+		}
+		localization_key = elector_status_tt_header
+	}
+	text = {
+		fallback = yes
+		localization_key = elector_status_tt_empty
+	}
+}
+
+ElectorStatusTTTitle0 = {
+	type = character
+	text = {
+		setup_scope = {
+			ordered_election_title = {
+				limit = { holder = scope:second }
+				order_by = tier
+				position = 0
+				check_range_bounds = no
+				save_scope_as = elector_status_tt_title
+				random_election_candidate = {
+					limit = {
+						has_election_vote_of = {
+							who = root
+							title = scope:elector_status_tt_title
+						}
+					}
+					save_scope_as = elector_status_tt_vote
+				}
+			}
+		}
+		trigger = {
+			any_election_title = {
+				count >= 1
+				holder = scope:second
+			}
+			exists = scope:elector_status_tt_vote
+		}
+		localization_key = elector_status_tt_title_vote
+	}
+	text = {
+		setup_scope = {
+			ordered_election_title = {
+				limit = { holder = scope:second }
+				order_by = tier
+				position = 0
+				check_range_bounds = no
+				save_scope_as = elector_status_tt_title
+				random_election_candidate = {
+					limit = {
+						has_election_vote_of = {
+							who = root
+							title = scope:elector_status_tt_title
+						}
+					}
+					save_scope_as = elector_status_tt_vote
+				}
+			}
+		}
+		trigger = {
+			any_election_title = {
+				count >= 1
+				holder = scope:second
+			}
+		}
+		localization_key = elector_status_tt_title_novote
+	}
+	text = {
+		fallback = yes
+		localization_key = elector_status_tt_empty
+	}
+}
+
+ElectorStatusTTTitle1 = {
+	type = character
+	text = {
+		setup_scope = {
+			ordered_election_title = {
+				limit = { holder = scope:second }
+				order_by = tier
+				position = 1
+				check_range_bounds = no
+				save_scope_as = elector_status_tt_title
+				random_election_candidate = {
+					limit = {
+						has_election_vote_of = {
+							who = root
+							title = scope:elector_status_tt_title
+						}
+					}
+					save_scope_as = elector_status_tt_vote
+				}
+			}
+		}
+		trigger = {
+			any_election_title = {
+				count >= 2
+				holder = scope:second
+			}
+			exists = scope:elector_status_tt_vote
+		}
+		localization_key = elector_status_tt_title_vote
+	}
+	text = {
+		setup_scope = {
+			ordered_election_title = {
+				limit = { holder = scope:second }
+				order_by = tier
+				position = 1
+				check_range_bounds = no
+				save_scope_as = elector_status_tt_title
+				random_election_candidate = {
+					limit = {
+						has_election_vote_of = {
+							who = root
+							title = scope:elector_status_tt_title
+						}
+					}
+					save_scope_as = elector_status_tt_vote
+				}
+			}
+		}
+		trigger = {
+			any_election_title = {
+				count >= 2
+				holder = scope:second
+			}
+		}
+		localization_key = elector_status_tt_title_novote
+	}
+	text = {
+		fallback = yes
+		localization_key = elector_status_tt_empty
+	}
+}
+
+ElectorStatusTTTitle2 = {
+	type = character
+	text = {
+		setup_scope = {
+			ordered_election_title = {
+				limit = { holder = scope:second }
+				order_by = tier
+				position = 2
+				check_range_bounds = no
+				save_scope_as = elector_status_tt_title
+				random_election_candidate = {
+					limit = {
+						has_election_vote_of = {
+							who = root
+							title = scope:elector_status_tt_title
+						}
+					}
+					save_scope_as = elector_status_tt_vote
+				}
+			}
+		}
+		trigger = {
+			any_election_title = {
+				count >= 3
+				holder = scope:second
+			}
+			exists = scope:elector_status_tt_vote
+		}
+		localization_key = elector_status_tt_title_vote
+	}
+	text = {
+		setup_scope = {
+			ordered_election_title = {
+				limit = { holder = scope:second }
+				order_by = tier
+				position = 2
+				check_range_bounds = no
+				save_scope_as = elector_status_tt_title
+				random_election_candidate = {
+					limit = {
+						has_election_vote_of = {
+							who = root
+							title = scope:elector_status_tt_title
+						}
+					}
+					save_scope_as = elector_status_tt_vote
+				}
+			}
+		}
+		trigger = {
+			any_election_title = {
+				count >= 3
+				holder = scope:second
+			}
+		}
+		localization_key = elector_status_tt_title_novote
+	}
+	text = {
+		fallback = yes
+		localization_key = elector_status_tt_empty
+	}
+}
+
+ElectorStatusTTMore = {
+	type = character
+	text = {
+		trigger = {
+			any_election_title = {
+				count >= 4
+				holder = scope:second
+			}
+		}
+		localization_key = elector_status_tt_more
+	}
+	text = {
+		fallback = yes
+		localization_key = elector_status_tt_empty
+	}
+}
+
+# Hook / secret status, shown only for electors. Mirrors the vanilla hook and
+# blackmail checks; only secrets the player already knows are considered.
+ElectorStatusTTHook = {
+	type = character
+	text = {
+		trigger = {
+			any_election_title = { holder = scope:second }
+			scope:second = { has_strong_usable_hook = root }
+		}
+		localization_key = elector_status_tt_hook_strong_usable
+	}
+	text = {
+		trigger = {
+			any_election_title = { holder = scope:second }
+			scope:second = { has_strong_hook = root }
+		}
+		localization_key = elector_status_tt_hook_strong_cooldown
+	}
+	text = {
+		trigger = {
+			any_election_title = { holder = scope:second }
+			scope:second = { has_usable_hook = root }
+		}
+		localization_key = elector_status_tt_hook_weak_usable
+	}
+	text = {
+		trigger = {
+			any_election_title = { holder = scope:second }
+			scope:second = { has_hook = root }
+		}
+		localization_key = elector_status_tt_hook_weak_cooldown
+	}
+	text = {
+		trigger = {
+			any_election_title = { holder = scope:second }
+			any_secret = {
+				is_known_by = scope:second
+				is_blackmailable_secret_trigger = {
+					BLACKMAILER = scope:second
+					PARTICIPANT = root
+				}
+			}
+		}
+		localization_key = elector_status_tt_hook_secret
+	}
+	text = {
+		trigger = {
+			any_election_title = { holder = scope:second }
+		}
+		localization_key = elector_status_tt_hook_none
+	}
+	text = {
+		fallback = yes
+		localization_key = elector_status_tt_empty
+	}
+}

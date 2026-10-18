@@ -33,6 +33,31 @@ menu is crowded) → **Send** → an event window lists the titles.
 Spot-check France (50+ electors): pick 3–4 names from its elector list and confirm each
 shows France.
 
+## Hover tooltip
+
+Hover any portrait (map, character view, outliner, character finder). For electors, a block
+appears above "Click to view / Right-click to interact":
+
+```
+Elector for your titles:
+    • Kingdom of Ireland: votes Murchad (vote forced)
+Hook: weak, usable now
+```
+
+| # | Case | Expected |
+|---|---|---|
+| T1 | Known elector (case 1 above) | Header, the title, and "votes <name>" matching the election window |
+| T2 | Non-elector | Tooltip unchanged from vanilla, with no extra lines |
+| T3 | Elector in several titles | Up to 3 titles, highest tier first; 4 or more adds "…and more" |
+| T4 | Elector you have a usable hook on | "Hook: strong/weak, usable now" |
+| T5 | Elector whose secret you know (blackmailable) | "Hook: none, but you know a blackmailable secret" (agrees with the Blackmail interaction being highlighted) |
+| T6 | Force an elector's vote (election window → Force Vote), then hover them | That title shows "(vote forced)", and the hook moves to "on cooldown" or disappears |
+| T7 | An elector whose vote you have *not* forced | No "(vote forced)" |
+| T8 | Hover yourself, a dead character, and a character in the finder list | No errors, and the text looks sensible |
+
+"(vote forced)" uses the same engine check as the election window's forced-vote note. It
+means *someone* controls that vote, not necessarily you.
+
 ## Afterwards
 
 ```sh
