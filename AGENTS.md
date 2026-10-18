@@ -179,7 +179,8 @@ after every change; the installed copy is a mirror (`rsync --delete`, scoped to 
 - **Character finder:** its filter categories are hard-coded in the engine (not in any
   script file), so a true "electors only" filter isn't moddable. Portrait hovers in the finder
   already show the tooltip block. A per-row marker would require overriding the vanilla GUI
-  type `widget_character_list_item_finder` (`gui/shared/lists.gui`); this hasn't been done.
+  type `widget_character_list_item_finder` (`gui/shared/lists.gui`). The user decided the
+  tooltip is enough (2026-10-17), so don't add it unless asked.
 
 ## Do not commit
 
