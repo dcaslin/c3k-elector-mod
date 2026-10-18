@@ -1,0 +1,77 @@
+﻿# Elector Status helpers.
+#
+# The engine's character-scope list `election_title` ("Iterate through all
+# titles the scoped character can vote on") decides elector eligibility, so
+# every succession_election type (Tanistry, Saxon, Feudal, Princely,
+# Scandinavian, Tribal, Confederation, Clerical, and modded ones) is covered
+# without re-implementing any election rules here.
+#
+# Localization cannot iterate a list, so matching titles are copied into
+# numbered event-local saved scopes (elector_status_title_0 ...). Saved scopes
+# vanish with the event; nothing is written to the save.
+#
+# The `any_ = { count >= N }` guard is required: `ordered_` caps an
+# out-of-range `position` to the last element, which would duplicate titles.
+# Same guard + position pattern as vanilla common/activities/activity_types/coronation.txt.
+
+# Scope: character (the elector being inspected). Requires scope:actor.
+# N = zero-based slot index, COUNT = N + 1.
+elector_status_save_title_slot_effect = {
+	if = {
+		limit = {
+			any_election_title = {
+				count >= $COUNT$
+				holder = scope:actor
+			}
+		}
+		ordered_election_title = {
+			limit = {
+				holder = scope:actor
+			}
+			order_by = tier
+			position = $N$
+			check_range_bounds = no
+			save_scope_as = elector_status_title_$N$
+		}
+	}
+}
+
+# Scope: any. Requires scope:actor and scope:recipient.
+# Slot count must match the triggered_desc lines in elector_status.0001 and the
+# line_N keys in localization (scripts/validate.py checks this).
+elector_status_collect_titles_effect = {
+	scope:recipient = {
+		elector_status_save_title_slot_effect = { N = 0 COUNT = 1 }
+		elector_status_save_title_slot_effect = { N = 1 COUNT = 2 }
+		elector_status_save_title_slot_effect = { N = 2 COUNT = 3 }
+		elector_status_save_title_slot_effect = { N = 3 COUNT = 4 }
+		elector_status_save_title_slot_effect = { N = 4 COUNT = 5 }
+		elector_status_save_title_slot_effect = { N = 5 COUNT = 6 }
+		elector_status_save_title_slot_effect = { N = 6 COUNT = 7 }
+		elector_status_save_title_slot_effect = { N = 7 COUNT = 8 }
+		elector_status_save_title_slot_effect = { N = 8 COUNT = 9 }
+		elector_status_save_title_slot_effect = { N = 9 COUNT = 10 }
+		elector_status_save_title_slot_effect = { N = 10 COUNT = 11 }
+		elector_status_save_title_slot_effect = { N = 11 COUNT = 12 }
+		elector_status_save_title_slot_effect = { N = 12 COUNT = 13 }
+		elector_status_save_title_slot_effect = { N = 13 COUNT = 14 }
+		elector_status_save_title_slot_effect = { N = 14 COUNT = 15 }
+		elector_status_save_title_slot_effect = { N = 15 COUNT = 16 }
+		elector_status_save_title_slot_effect = { N = 16 COUNT = 17 }
+		elector_status_save_title_slot_effect = { N = 17 COUNT = 18 }
+		elector_status_save_title_slot_effect = { N = 18 COUNT = 19 }
+		elector_status_save_title_slot_effect = { N = 19 COUNT = 20 }
+		if = {
+			limit = {
+				any_election_title = {
+					count >= 21
+					holder = scope:actor
+				}
+			}
+			save_scope_value_as = {
+				name = elector_status_has_overflow
+				value = yes
+			}
+		}
+	}
+}
