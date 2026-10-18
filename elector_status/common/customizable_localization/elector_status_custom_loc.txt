@@ -10,9 +10,12 @@
 # Elector eligibility comes from the engine list `election_title`, same as the
 # Elector Status interaction. Saved scopes here exist only while the text renders.
 #
-# Title slots use `ordered_ position = N` in setup_scope. ordered_ caps an
-# out-of-range position to the last element, so each slot's trigger re-checks
-# `count >= N+1` and falls back to empty text otherwise.
+# Title slot N takes the top-tier remaining title after excluding the titles slots
+# 0..N-1 would pick (elector_status_tt_prev*), always at position 0. Do NOT use
+# `position = N` here: when the list is shorter, the engine logs "Given position was
+# bigger than the list" on every tooltip render (check_range_bounds only silences
+# min/max), and setup_scope has no vanilla precedent for `if`. Position 0 on an empty
+# list is silent (observed in-game). `?=` avoids errors when a prev scope is unset.
 
 ElectorStatusTTHeader = {
 	type = character
@@ -33,10 +36,10 @@ ElectorStatusTTTitle0 = {
 	text = {
 		setup_scope = {
 			ordered_election_title = {
-				limit = { holder = scope:second }
+				limit = {
+					holder = scope:second
+				}
 				order_by = tier
-				position = 0
-				check_range_bounds = no
 				save_scope_as = elector_status_tt_title
 				random_election_candidate = {
 					limit = {
@@ -50,10 +53,7 @@ ElectorStatusTTTitle0 = {
 			}
 		}
 		trigger = {
-			any_election_title = {
-				count >= 1
-				holder = scope:second
-			}
+			exists = scope:elector_status_tt_title
 			exists = scope:elector_status_tt_vote
 		}
 		localization_key = elector_status_tt_title_vote
@@ -61,10 +61,10 @@ ElectorStatusTTTitle0 = {
 	text = {
 		setup_scope = {
 			ordered_election_title = {
-				limit = { holder = scope:second }
+				limit = {
+					holder = scope:second
+				}
 				order_by = tier
-				position = 0
-				check_range_bounds = no
 				save_scope_as = elector_status_tt_title
 				random_election_candidate = {
 					limit = {
@@ -78,10 +78,7 @@ ElectorStatusTTTitle0 = {
 			}
 		}
 		trigger = {
-			any_election_title = {
-				count >= 1
-				holder = scope:second
-			}
+			exists = scope:elector_status_tt_title
 		}
 		localization_key = elector_status_tt_title_novote
 	}
@@ -96,10 +93,20 @@ ElectorStatusTTTitle1 = {
 	text = {
 		setup_scope = {
 			ordered_election_title = {
-				limit = { holder = scope:second }
+				limit = {
+					holder = scope:second
+				}
 				order_by = tier
-				position = 1
-				check_range_bounds = no
+				save_scope_as = elector_status_tt_prev0
+			}
+			ordered_election_title = {
+				limit = {
+					holder = scope:second
+					NOR = {
+						this ?= scope:elector_status_tt_prev0
+					}
+				}
+				order_by = tier
 				save_scope_as = elector_status_tt_title
 				random_election_candidate = {
 					limit = {
@@ -113,10 +120,7 @@ ElectorStatusTTTitle1 = {
 			}
 		}
 		trigger = {
-			any_election_title = {
-				count >= 2
-				holder = scope:second
-			}
+			exists = scope:elector_status_tt_title
 			exists = scope:elector_status_tt_vote
 		}
 		localization_key = elector_status_tt_title_vote
@@ -124,10 +128,20 @@ ElectorStatusTTTitle1 = {
 	text = {
 		setup_scope = {
 			ordered_election_title = {
-				limit = { holder = scope:second }
+				limit = {
+					holder = scope:second
+				}
 				order_by = tier
-				position = 1
-				check_range_bounds = no
+				save_scope_as = elector_status_tt_prev0
+			}
+			ordered_election_title = {
+				limit = {
+					holder = scope:second
+					NOR = {
+						this ?= scope:elector_status_tt_prev0
+					}
+				}
+				order_by = tier
 				save_scope_as = elector_status_tt_title
 				random_election_candidate = {
 					limit = {
@@ -141,10 +155,7 @@ ElectorStatusTTTitle1 = {
 			}
 		}
 		trigger = {
-			any_election_title = {
-				count >= 2
-				holder = scope:second
-			}
+			exists = scope:elector_status_tt_title
 		}
 		localization_key = elector_status_tt_title_novote
 	}
@@ -159,10 +170,31 @@ ElectorStatusTTTitle2 = {
 	text = {
 		setup_scope = {
 			ordered_election_title = {
-				limit = { holder = scope:second }
+				limit = {
+					holder = scope:second
+				}
 				order_by = tier
-				position = 2
-				check_range_bounds = no
+				save_scope_as = elector_status_tt_prev0
+			}
+			ordered_election_title = {
+				limit = {
+					holder = scope:second
+					NOR = {
+						this ?= scope:elector_status_tt_prev0
+					}
+				}
+				order_by = tier
+				save_scope_as = elector_status_tt_prev1
+			}
+			ordered_election_title = {
+				limit = {
+					holder = scope:second
+					NOR = {
+						this ?= scope:elector_status_tt_prev0
+						this ?= scope:elector_status_tt_prev1
+					}
+				}
+				order_by = tier
 				save_scope_as = elector_status_tt_title
 				random_election_candidate = {
 					limit = {
@@ -176,10 +208,7 @@ ElectorStatusTTTitle2 = {
 			}
 		}
 		trigger = {
-			any_election_title = {
-				count >= 3
-				holder = scope:second
-			}
+			exists = scope:elector_status_tt_title
 			exists = scope:elector_status_tt_vote
 		}
 		localization_key = elector_status_tt_title_vote
@@ -187,10 +216,31 @@ ElectorStatusTTTitle2 = {
 	text = {
 		setup_scope = {
 			ordered_election_title = {
-				limit = { holder = scope:second }
+				limit = {
+					holder = scope:second
+				}
 				order_by = tier
-				position = 2
-				check_range_bounds = no
+				save_scope_as = elector_status_tt_prev0
+			}
+			ordered_election_title = {
+				limit = {
+					holder = scope:second
+					NOR = {
+						this ?= scope:elector_status_tt_prev0
+					}
+				}
+				order_by = tier
+				save_scope_as = elector_status_tt_prev1
+			}
+			ordered_election_title = {
+				limit = {
+					holder = scope:second
+					NOR = {
+						this ?= scope:elector_status_tt_prev0
+						this ?= scope:elector_status_tt_prev1
+					}
+				}
+				order_by = tier
 				save_scope_as = elector_status_tt_title
 				random_election_candidate = {
 					limit = {
@@ -204,10 +254,7 @@ ElectorStatusTTTitle2 = {
 			}
 		}
 		trigger = {
-			any_election_title = {
-				count >= 3
-				holder = scope:second
-			}
+			exists = scope:elector_status_tt_title
 		}
 		localization_key = elector_status_tt_title_novote
 	}

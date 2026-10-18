@@ -49,10 +49,14 @@ Each custom loc (`common/customizable_localization/elector_status_custom_loc.txt
 `root` = hovered character and `scope:second` = player. It returns `elector_status_tt_empty`
 unless `any_election_title = { holder = scope:second }`.
 
-- `ElectorStatusTTTitle0..2`: `setup_scope` saves the Nth title (`ordered_election_title`,
-  `order_by = tier`) and, via `random_election_candidate` + `has_election_vote_of`, the
-  candidate the elector currently votes for. The trigger re-checks `count >= N+1` (same
-  capping issue as the event). The loc line shows the title, the vote, and
+- `ElectorStatusTTTitle0..2`: `setup_scope` picks slot N as the top-tier title remaining
+  after excluding the titles slots 0..N-1 would pick (`elector_status_tt_prev*`, compared
+  with `this ?= scope:…` so unset scopes don't error). Every lookup is position 0. It also
+  saves the candidate the elector currently votes for (`random_election_candidate` +
+  `has_election_vote_of`). **Never use `position = N` in custom loc:** the engine logs "Given
+  position was bigger than the list" on every render when the list is shorter
+  (`check_range_bounds` only silences min/max). The first tooltip build did this and wrote
+  4k+ error lines in one session; validate.py now rejects it. The loc line shows the title, the vote, and
   `(vote forced)` when the GUI function `Title.CanCharacterControlVote(elector)` is false.
   That is the same check vanilla `gui/shared/succession_election_widgets.gui` uses to show
   `SUCCESSION_ELECTION_WINDOW_VOTE_BREAKDOWN_FORCED_VOTE`. There is **no script trigger**
@@ -149,7 +153,10 @@ after every change; the installed copy is a mirror (`rsync --delete`, scoped to 
    and unknown loc keys in dynamic descs at load. It restores `dlc_load.json` and logs
    on exit. Proves the mod parses; does not prove behaviour.
 3. **In-game** — follow `docs/TESTING.md`. Only this level verifies results. Agents
-   can't drive the game; ask the user to run it and report back.
+   can't drive the game; ask the user to run it and send screenshots. Then run
+   `python3 scripts/error-log-summary.py` yourself (works while CK3 is running) and expect
+   0 lines. Runtime-only errors (tooltip loc functions, list errors in custom loc) appear
+   only here; levels 1 and 2 can't see them.
 
 ## Development mode, script docs, error.log
 

@@ -48,7 +48,7 @@ Hook: weak, usable now
 |---|---|---|
 | T1 | Known elector (case 1 above) | Header, the title, and "votes <name>" matching the election window |
 | T2 | Non-elector | Tooltip unchanged from vanilla, with no extra lines |
-| T3 | Elector in several titles | Up to 3 titles, highest tier first; 4 or more adds "…and more" |
+| T3 | Elector in several titles | Up to 3 titles, highest tier first, no duplicates; 4 or more adds "…and more" |
 | T4 | Elector you have a usable hook on | "Hook: strong/weak, usable now" |
 | T5 | Elector whose secret you know (blackmailable) | "Hook: none, but you know a blackmailable secret" (agrees with the Blackmail interaction being highlighted) |
 | T6 | Force an elector's vote (election window → Force Vote), then hover them | That title shows "(vote forced)", and the hook moves to "on cooldown" or disappears |
@@ -61,10 +61,10 @@ means *someone* controls that vote, not necessarily you.
 ## Afterwards
 
 ```sh
-grep -n elector_status "$HOME/Documents/Paradox Interactive/Crusader Kings III/logs/error.log"
+python3 scripts/error-log-summary.py
 ```
 
-There should be no output. Loc data-function problems only show up once the event has been
+It should report 0 lines mentioning elector_status. Loc data-function problems only show up once the event has been
 displayed, so run this after testing.
 
 If the mod lists something that differs from the election window, record the title, the

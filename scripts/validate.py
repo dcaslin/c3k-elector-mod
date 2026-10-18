@@ -199,14 +199,23 @@ def check_tooltip(texts: dict[str, str], loc: dict[str, str]) -> None:
     for key in defined - set(called):
         err(f"custom loc {key} is defined but never called from {TOOLTIP_KEY}")
 
+    if re.search(r"\bposition\s*=", strip_comments_and_strings(custom)):
+        err("custom loc must not use `position =`: it logs an error on every tooltip render "
+            "when the list is shorter (seen in-game, 4k+ lines)")
     blocks = dict(re.findall(r"^(ElectorStatusTTTitle\d+) = \{(.*?)^\}", custom, re.M | re.S))
     n = len(blocks)
     for name, body in blocks.items():
         i = int(name.removeprefix("ElectorStatusTTTitle"))
-        if set(re.findall(r"position = (\d+)", body)) != {str(i)}:
-            err(f"{name}: every position must be {i}")
-        if set(re.findall(r"count >= (\d+)", body)) != {str(i + 1)}:
-            err(f"{name}: every count guard must be >= {i + 1}")
+        for entry in re.split(r"\n\ttext = \{", body)[1:]:
+            if "fallback = yes" in entry:
+                continue
+            saved = re.findall(r"save_scope_as = elector_status_tt_prev(\d+)", entry)
+            if saved != [str(j) for j in range(i)]:
+                err(f"{name}: each entry must save elector_status_tt_prev0..{i - 1} in order, got {saved}")
+            final = entry.split("save_scope_as = elector_status_tt_title", 1)[0].rsplit("ordered_election_title", 1)[-1]
+            excluded = sorted(set(re.findall(r"this \?= scope:elector_status_tt_prev(\d+)", final)))
+            if excluded != [str(j) for j in range(i)]:
+                err(f"{name}: final lookup must exclude prev0..{i - 1}, got {excluded}")
     if [f"ElectorStatusTTTitle{i}" for i in range(n)] != [k for k in called if k.startswith("ElectorStatusTTTitle")]:
         err(f"{TOOLTIP_KEY} must call ElectorStatusTTTitle0..{n - 1} in order")
     more = re.search(r"^ElectorStatusTTMore = \{.*?count >= (\d+)", custom, re.M | re.S)
