@@ -8,6 +8,10 @@ modded ones) because it reads the game's own elector data. It is read-only.
 
 Built for CK3 1.20.1.1.
 
+## Example
+
+![Elector Status details in a character hover tooltip](docs/images/elector-tooltip-example.png)
+
 ```sh
 scripts/install-macos.sh        # install to ~/Documents/Paradox Interactive/Crusader Kings III/mod
 python3 scripts/validate.py     # static checks
